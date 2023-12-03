@@ -1,26 +1,45 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
+# your_app/views.py
+
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import VendorSerializers
+from rest_framework import status
 from .models import Vendor
-from django.shortcuts import get_object_or_404
+from .serializers import VendorSerializer
 
-@api_view(['GET'])
-def apiOverview(request):
-    api_urls = {
-        'Create' : '/create-vendor/',
-        'List'   : '/list-vendor/',
-        'Details': '/specific-vendor',
-        'Update' : '/update-vendor/',
-        'Delete' : '/delete-vendor'
+class VendorListCreateView(APIView):
+    def get(self, request):
+        vendors = Vendor.objects.all()
+        serializer = VendorSerializer(vendors, many=True)
+        return Response(serializer.data)
 
-    }
-    return Response(api_urls)
-    # POST /api/vendors/: Create a new vendor.
-    # GET /api/vendors/: List all vendors.
-    # GET /api/vendors/{vendor_id}/: Retrieve a specific vendor's details.
-    # PUT /api/vendors/{vendor_id}/: Update a vendor's details.
-    # DELETE /api/vendors/{vendor_id}/: Delete a vendor
+    def post(self, request):
+        serializer = VendorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VendorRetrieveUpdateDestroyView(APIView):
+    def get(self, request, vendor_id):
+        vendor = self.get_vendor(vendor_id)
+        serializer = VendorSerializer(vendor)
+        return Response(serializer.data)
 
+    def put(self, request, vendor_id):
+        vendor = self.get_vendor(vendor_id)
+        serializer = VendorSerializer(vendor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, vendor_id):
+        vendor = self.get_vendor(vendor_id)
+        vendor.delete()
+        return Response({'message': 'Vendor deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    def get_vendor(self, vendor_id):
+        try:
+            return Vendor.objects.get(pk=vendor_id)
+        except Vendor.DoesNotExist:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
