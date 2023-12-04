@@ -8,7 +8,7 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vendors', '0002_historicalperformance'),
+        ('Vendors', '0002_historicalperformance'),
     ]
 
     operations = [
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('quality_rating', models.FloatField(blank=True, null=True)),
                 ('issue_date', models.DateTimeField(auto_now_add=True)),
                 ('acknowledgment_date', models.DateTimeField(blank=True, null=True)),
-                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vendors.vendor')),
+                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Vendors.vendor')),
             ],
         ),
     ]
