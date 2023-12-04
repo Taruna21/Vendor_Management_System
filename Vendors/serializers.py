@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Vendor , PurchaseOrder , HistoricalPerformance
+from .models import Vendor, PurchaseOrder, HistoricalPerformance
+
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,15 +10,12 @@ class VendorSerializer(serializers.ModelSerializer):
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model= PurchaseOrder
-        fields = ['po_number ', 'vendor', ' order_date', 
-                  'delivery_date', 'items', 'quantity','status']
+        model = PurchaseOrder
+        fields = ['po_number ', 'vendor', ' order_date',
+                  'delivery_date', 'items', 'quantity', 'status']
+
 
 class HistoricalPerformanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = HistoricalPerformance
         fields = '__all__'
-
-
-        
-

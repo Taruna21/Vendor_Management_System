@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.db.models import JSONField
 
 
-
 class Vendor(models.Model):
     name = models.CharField(max_length=250)
     contact_details = models.TextField(max_length=250)
@@ -16,16 +15,16 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.name
-    
-class PurchaseOrder(models.Model):
 
+
+class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('canceled', 'Canceled'),
     ]
-    po_number = models.CharField(max_length=100 , unique=True)
-    vendor =  models.ForeignKey(Vendor, on_delete= models.CASCADE)
+    po_number = models.CharField(max_length=100, unique=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField(default=timezone.now)
     delivery_date = models.DateTimeField(null=True, blank=True)
     items = JSONField()
@@ -37,7 +36,8 @@ class PurchaseOrder(models.Model):
 
     def __str__(self):
         return self.po_number
-    
+
+
 class HistoricalPerformance(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     date = models.DateTimeField()
@@ -48,4 +48,3 @@ class HistoricalPerformance(models.Model):
 
     def __str__(self):
         return f"{self.vendor.name} - {self.date}"
-
