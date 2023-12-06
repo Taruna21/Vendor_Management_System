@@ -1,11 +1,12 @@
-# your_app/views.py
-
-
+# Vendors/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Vendor, PurchaseOrder
 from .serializers import VendorSerializer, PurchaseOrderSerializer
+
+from django.contrib.auth.models import Group
+from django.shortcuts import get_object_or_404
 
 
 class VendorListCreateView(APIView):
@@ -17,10 +18,14 @@ class VendorListCreateView(APIView):
     def post(self, request):
         serializer = VendorSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            vendor = serializer.save()  # Save the vendor data
+            # Extract the User instance associated with the Vendor
+            user = vendor.vendor_user
+            vendor_group, created = Group.objects.get_or_create(name='Vendor')
+            # Add the user to the Vendor group
+            vendor_group.user_set.add(user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class VendorRetrieveUpdateDestroyView(APIView):
     def get(self, request, vendor_id):
