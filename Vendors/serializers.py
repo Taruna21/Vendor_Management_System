@@ -4,17 +4,19 @@ from .models import Vendor, PurchaseOrder, HistoricalPerformance
 
 
 class VendorSerializer(serializers.ModelSerializer):
-    vendor_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # vendor_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Vendor
-        fields = ['vendor_user', 'name', 'contact_details', 'address', 'vendor_code']
+        fields = ['vendor_user_id', 'name', 'contact_details', 'address', 'vendor_code']
+
+    # def create(self, validated_data):
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
-        fields = ['po_number ', 'vendor', ' order_date',
+        fields = ['po_number', 'vendor', 'order_date',
                   'delivery_date', 'items', 'quantity', 'status']
 
 

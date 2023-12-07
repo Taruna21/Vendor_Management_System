@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 class Vendor(models.Model):
-    vendor_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='vendor_profile', unique=True)
+    vendor_user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='vendor_profile', unique=True)
     name = models.CharField(max_length=250)
     contact_details = models.TextField(max_length=250)
     address = models.TextField(max_length=250)
@@ -23,6 +23,8 @@ class Vendor(models.Model):
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('acknowledged', 'acknowledged'),
+        ('shipping', 'Shipping'),
         ('completed', 'Completed'),
         ('canceled', 'Canceled'),
     ]
