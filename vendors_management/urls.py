@@ -19,5 +19,21 @@ from django.urls import path , include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('vendors.urls'))
+    path('api/', include('Vendors.urls')),
+
+    # Djoser user management endpoints( Djoser module documentation)
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
+
+# Important djoser user management endpoints
+# 1. auth/users/
+# - POST: Only for admin to create new user(Authenticated as admin).
+# - GET: Admin to see the list of all user(Authenticated as admin)
+# - GET: Any authenticated user to see their details
+#
+# 2. /auth/users/me
+# - GET: Any authenticated user to see their details(provide logged-in user details using sessions)
+#
+# 3. /auth/token/login/
+# POST: Generate a token using login user using their details(username&password)
