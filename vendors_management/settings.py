@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'djoser',
     # internal apps
     'Vendors',
+    'Accounts',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +123,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configure django to use CustomUser model
+AUTH_USER_MODEL = "Accounts.CustomUser"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

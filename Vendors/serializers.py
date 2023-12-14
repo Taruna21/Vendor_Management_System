@@ -1,14 +1,14 @@
-from django.contrib.auth.models import User
+from Accounts.models import CustomUser
 from rest_framework import serializers
-from .models import Vendor, PurchaseOrder, HistoricalPerformance
+from .models import Vendor, PurchaseOrder, VendorPerformance
 
 
 class VendorSerializer(serializers.ModelSerializer):
-    # vendor_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # vendor_user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
     class Meta:
         model = Vendor
-        fields = ['vendor_user_id', 'name', 'contact_details', 'address', 'vendor_code']
+        fields = ['vendor_user_id', 'vendor_code']
 
     # def create(self, validated_data):
 
@@ -22,5 +22,5 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
 class HistoricalPerformanceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HistoricalPerformance
+        model = VendorPerformance
         fields = '__all__'
