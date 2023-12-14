@@ -61,7 +61,7 @@ class VendorPerformance(models.Model):
         return f"{self.vendor.name} - {self.date}"
 
 
-class VendorPerformanceAverages(models.Model):
+class VendorPerformanceAverage(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     average_on_time_delivery_rate = models.FloatField()
     average_quality_rating = models.FloatField()
