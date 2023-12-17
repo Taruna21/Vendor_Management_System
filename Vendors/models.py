@@ -17,6 +17,18 @@ def generate_vendor_code():
     return new_code
 
 
+def generate_po_code():
+    """Generate a random po code based on a pattern"""
+    last_code = PurchaseOrder.objects.all().order_by('-po_number').first()
+    if last_code:
+        last_number = int(last_code.po_number[2:])
+        new_number = last_number + 1
+        new_code = f"po{new_number:02d}"
+    else:
+        new_code = "po01"
+    return new_code
+
+
 class Vendor(models.Model):
     vendor_user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='vendor_profile', unique=True)
     vendor_code = models.CharField(max_length=250, default=generate_vendor_code, editable=False, blank=True)
@@ -33,13 +45,13 @@ class PurchaseOrder(models.Model):
         ('completed', 'Completed'),
         ('canceled', 'Canceled'),
     ]
-    po_number = models.CharField(max_length=100, unique=True)
+    po_number = models.CharField(max_length=100, default=generate_po_code, editable=False, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField(default=timezone.now)
     delivery_date = models.DateTimeField(null=True, blank=True)
     items = JSONField()
     quantity = models.PositiveIntegerField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', blank=True)
     quality_rating = models.FloatField(null=True, blank=True)
     issue_date = models.DateTimeField(auto_now_add=True)
     acknowledgment_date = models.DateTimeField(null=True, blank=True)
@@ -58,7 +70,7 @@ class VendorPerformance(models.Model):
     fulfillment_rate = models.FloatField()
 
     def __str__(self):
-        return f"{self.vendor.name} - {self.date}"
+        return f"{self.vendor.vendor_user.first_name} - {self.date}"
 
 
 class VendorPerformanceAverage(models.Model):
