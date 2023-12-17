@@ -1,13 +1,14 @@
 # Vendors/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from django.contrib.auth.models import Group
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from Accounts.models import CustomUser
 from .models import Vendor, PurchaseOrder
 from .serializers import VendorSerializer, PurchaseOrderSerializer
-
-from django.contrib.auth.models import Group, User
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 
 
 class VendorListCreateView(APIView):
@@ -17,26 +18,26 @@ class VendorListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        # Extract the User instance associated with the Vendor. Inform if non-existent
-        pk = request.data['vendor_user_id']
         try:
-            user = get_object_or_404(User, pk=pk)  # fetch user
-        except Http404:
-            return Response({'Error': f"User with id {pk} doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+            user_id = int(request.data.get('vendor_user')) # possible ValueError
+            user = get_object_or_404(CustomUser, pk=user_id)  # check user exist
 
-        serializer = VendorSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
+            # Serialize request data
+            serializer = VendorSerializer(data=request.data)
+            if serializer.is_valid():
                 vendor = serializer.save()  # Save the vendor data
-            except Exception as e:
-                return Response({'Error': str(e) + '.This user is already a Vendor'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response({'Success': 'Vendor created successfully'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            vendor_group, created = Group.objects.get_or_create(name='Vendor')
-            # Add the user to the Vendor group
-            vendor_group.user_set.add(user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            return Response({'Error': 'Invalid value for vendor_user.Must be int'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Http404:
+            return Response({'Error': f"User with id {user_id} doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VendorRetrieveUpdateDestroyView(APIView):

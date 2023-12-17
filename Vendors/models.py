@@ -22,7 +22,7 @@ class Vendor(models.Model):
     vendor_code = models.CharField(max_length=250, default=generate_vendor_code, editable=False, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.vendor_user.first_name
 
 
 class PurchaseOrder(models.Model):
