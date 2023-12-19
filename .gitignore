@@ -4,4 +4,6 @@ project_requirements/
 pipfile
 pipfile.lock
 .idea/
-__pycache__/
+
+# Ignore compiled Python files in all subfolders
+**/*.pyc

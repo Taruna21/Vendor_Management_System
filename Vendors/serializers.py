@@ -21,8 +21,8 @@ class VendorSerializer(serializers.ModelSerializer):
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
-        fields = ['po_number', 'vendor', 'order_date',
-                  'delivery_date', 'items', 'quantity', 'status']
+        fields = ['id', 'po_number', 'vendor', 'order_date',
+                  'delivery_date', 'items', 'quantity', 'status', 'issue_date', 'acknowledgment_date']
 
 
 class HistoricalPerformanceSerializer(serializers.ModelSerializer):
