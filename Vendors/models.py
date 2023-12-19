@@ -39,7 +39,7 @@ class Vendor(models.Model):
 
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
+        # ('pending', 'Pending'), # set as default value, deactivate or delete
         ('acknowledged', 'Acknowledged'),
         ('shipping', 'Shipping'),
         ('completed', 'Completed'),
@@ -62,11 +62,11 @@ class PurchaseOrder(models.Model):
 class VendorPerformance(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
-    date = models.DateTimeField()
-    on_time_delivery_rate = models.FloatField()
-    quality_rating = models.FloatField()
-    response_time = models.FloatField()
-    fulfillment_rate = models.FloatField()
+    date = models.DateTimeField(auto_now_add=True)
+    on_time_delivery_rate = models.FloatField(default=0)
+    quality_rating = models.FloatField(default=0)
+    response_time = models.FloatField()   # no. days for a Vendor to acknowledge an order. (acknowledgement_date - issue_date)
+    fulfillment_rate = models.FloatField(default=0)
 
     def __str__(self):
         return f"{self.vendor.vendor_user.first_name} - {self.date}"
