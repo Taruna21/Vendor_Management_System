@@ -65,11 +65,12 @@ class VendorPerformance(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     on_time_delivery_rate = models.FloatField(default=0)
     quality_rating = models.FloatField(default=0)
-    response_time = models.FloatField()   # no. days for a Vendor to acknowledge an order. (acknowledgement_date - issue_date)
+    response_time = models.FloatField()   # no. days for a Vendor to acknowledge an order. (acknowledgement_date -
+    # issue_date)
     fulfillment_rate = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.vendor.vendor_user.first_name} - {self.date}"
+        return f"{self.vendor.vendor_user.first_name} - {self.response_time}"
 
 
 class VendorPerformanceAverage(models.Model):
