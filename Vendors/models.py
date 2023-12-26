@@ -69,7 +69,7 @@ class VendorPerformance(models.Model):
     fulfillment_rate = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.vendor.vendor_user.first_name} - {self.date}"
+        return f"{self.vendor.vendor_user.first_name} - {self.response_time}"
 
 
 class VendorPerformanceAverage(models.Model):
