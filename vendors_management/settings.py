@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from rest_framework.schemas import openapi
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # run migrations
     'django_extensions',
     'djoser',
-    'schema_graph',
+    'drf_spectacular',
+    'debug_toolbar',
     # internal apps
     'Vendors',
     'Accounts',
@@ -54,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'vendors_management.urls'
@@ -129,8 +133,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "Accounts.CustomUser"
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  # Token authentication in DRF
         'rest_framework.authentication.SessionAuthentication',  # Works with browsable API. Deactivate when done
     ],
 }
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Vendor Management System',
+    'DESCRIPTION': 'Provides endpoints for Vendor Management',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 import datetime
-
+import math
 from .models import PurchaseOrder, VendorPerformance, VendorPerformanceAverage, Vendor
 
 
@@ -51,7 +51,7 @@ def calculate_response_time(sender, instance, **kwargs):
         # update VendorPerformance
         # Calculate response time
         response_time = instance.acknowledgment_date - instance.issue_date  # compute response. result is a time delta
-        response_time = round((response_time.total_seconds() / (24 * 3600)), 2)  # assume decimal days for response time
+        response_time = math.ceil(response_time.total_seconds() / (24 * 3600))  # response time in days
         vendor_performance = VendorPerformance(vendor=vendor, purchase_order=instance, response_time=response_time)
         vendor_performance.save()
 
@@ -71,7 +71,7 @@ def calculate_vendor_average_stats(sender, instance, **kwargs):
     # filter all Performance records related to a particular Vendor
     vendor_performance = VendorPerformance.objects.filter(vendor=vendor)
     # Calculate averages
-    vendor_average_response_time = vendor_performance.aggregate(Avg('response_time'))['response_time__avg']
+    vendor_average_response_time = math.ceil(vendor_performance.aggregate(Avg('response_time'))['response_time__avg'])
     # create instance or get if it exists
     obj_performance, created = VendorPerformanceAverage.objects.get_or_create(
         vendor=vendor,
