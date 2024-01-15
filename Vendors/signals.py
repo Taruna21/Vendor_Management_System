@@ -6,6 +6,7 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 import datetime
 import math
+
 from .models import PurchaseOrder, VendorPerformance, VendorPerformanceAverage, Vendor
 
 
@@ -22,7 +23,7 @@ def calculate_response_time(sender, instance, **kwargs):
         3. Allow other status to take effect e.g. shipping, completed or cancelled.
            Without updating acknowledgement date.
         4. Estimate delivery date.
-        """
+
     initial_delivery_time = 7  # Assumed, change or load from ML model
     vendor = instance.vendor
     try:
@@ -59,19 +60,21 @@ def calculate_response_time(sender, instance, **kwargs):
         # Allow update to ship, completed, or cancelled without updating acknowledgment date
         return  # Acknowledgement date shouldn't be updated in these cases
 
-
 @receiver(post_save, sender=PurchaseOrder)
 def calculate_vendor_average_stats(sender, instance, **kwargs):
     """
     Anytime the VendorPerformance is updated. Calculate average values and save to VendorPerformanceAverage Model.
     Since we want to calculate the average for each Vendor. There should be only one record/instance of vendor in the
     VendorPerformanceAverage model.
+
     """
     vendor = instance.vendor  # fetch vendor
     # filter all Performance records related to a particular Vendor
     vendor_performance = VendorPerformance.objects.filter(vendor=vendor)
     # Calculate averages
+
     vendor_average_response_time = math.ceil(vendor_performance.aggregate(Avg('response_time'))['response_time__avg'])
+
     # create instance or get if it exists
     obj_performance, created = VendorPerformanceAverage.objects.get_or_create(
         vendor=vendor,
