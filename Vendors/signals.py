@@ -23,7 +23,7 @@ def calculate_response_time(sender, instance, **kwargs):
         3. Allow other status to take effect e.g. shipping, completed or cancelled.
            Without updating acknowledgement date.
         4. Estimate delivery date.
-
+    """
     initial_delivery_time = 7  # Assumed, change or load from ML model
     vendor = instance.vendor
     try:
@@ -59,6 +59,7 @@ def calculate_response_time(sender, instance, **kwargs):
     elif instance.status not in ['acknowledged', 'pending']:  # issue 3
         # Allow update to ship, completed, or cancelled without updating acknowledgment date
         return  # Acknowledgement date shouldn't be updated in these cases
+
 
 @receiver(post_save, sender=PurchaseOrder)
 def calculate_vendor_average_stats(sender, instance, **kwargs):
