@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from schema_graph.views import Schema
 
 
 urlpatterns = [
@@ -27,9 +26,6 @@ urlpatterns = [
     # Djoser user management endpoints( Djoser module documentation)
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-
-    # django-schema-graph
-    path("schema/", Schema.as_view(), name="schema"),
 ]
 
 # Important djoser user management endpoints

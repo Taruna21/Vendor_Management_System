@@ -1,5 +1,4 @@
 # Vendors/views.py
-from django.contrib.auth.models import Group
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -7,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Accounts.models import CustomUser
-from .models import Vendor, PurchaseOrder
-from .serializers import VendorSerializer, PurchaseOrderSerializer
+from .models import Vendor, PurchaseOrder, VendorPerformanceAverage
+from .serializers import VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer
 
 
 class VendorListCreateView(APIView):
@@ -19,7 +18,7 @@ class VendorListCreateView(APIView):
 
     def post(self, request):
         try:
-            user_id = int(request.data.get('vendor_user')) # possible ValueError
+            user_id = int(request.data.get('vendor_user'))  # possible ValueError
             user = get_object_or_404(CustomUser, pk=user_id)  # check user exist
 
             # Serialize request data
@@ -68,8 +67,6 @@ class VendorRetrieveUpdateDestroyView(APIView):
         except Vendor.DoesNotExist:
             return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
-
-# purchaseorder
 
 class PurchaseOrderListCreateView(APIView):
     def get(self, request):
@@ -125,3 +122,16 @@ class PurchaseOrderRetrieveUpdateDeleteView(APIView):
             return Response({'message': 'Purchase Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except PurchaseOrder.DoesNotExist:
             return Response({'error': 'Purchase Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class VendorPerformanceListView(APIView):
+    def get(self, request, vendor_id):
+        try:
+            vendor = get_object_or_404(Vendor, pk=vendor_id)
+        except Http404:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        vendor_performances = VendorPerformanceAverage.objects.get(vendor=vendor)
+        serializer = VendorPerformanceSerializer(vendor_performances)
+        print(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)

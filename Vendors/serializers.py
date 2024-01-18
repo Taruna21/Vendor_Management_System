@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from Accounts.models import CustomUser
 from Accounts.serializers import CustomUserSerializer
-from .models import Vendor, PurchaseOrder, VendorPerformance
+from .models import Vendor, PurchaseOrder, VendorPerformanceAverage
 
 
 class VendorSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
                   'delivery_date', 'items', 'quantity', 'status', 'issue_date', 'acknowledgment_date']
 
 
-class HistoricalPerformanceSerializer(serializers.ModelSerializer):
+class VendorPerformanceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VendorPerformance
+        model = VendorPerformanceAverage
         fields = '__all__'
