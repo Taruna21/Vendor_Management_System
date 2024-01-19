@@ -11,8 +11,9 @@ from rest_framework.views import APIView
 
 from Accounts.models import CustomUser
 
-from .models import PurchaseOrder, Vendor
-from .serializers import PurchaseOrderSerializer, VendorSerializer
+from .models import Vendor, PurchaseOrder, VendorPerformanceAverage
+from .serializers import VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer
+
 
 
 class VendorListCreateView(APIView):
@@ -92,8 +93,6 @@ class VendorRetrieveUpdateDestroyView(APIView):
             return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# purchaseorder
-
 class PurchaseOrderListCreateView(APIView):
     @extend_schema(
         description="Retrieve a list of purchase orders.",
@@ -166,3 +165,16 @@ class PurchaseOrderRetrieveUpdateDeleteView(APIView):
             return Response({'message': 'Purchase Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except PurchaseOrder.DoesNotExist:
             return Response({'error': 'Purchase Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class VendorPerformanceListView(APIView):
+    def get(self, request, vendor_id):
+        try:
+            vendor = get_object_or_404(Vendor, pk=vendor_id)
+        except Http404:
+            return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        vendor_performances = VendorPerformanceAverage.objects.get(vendor=vendor)
+        serializer = VendorPerformanceSerializer(vendor_performances)
+        print(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)

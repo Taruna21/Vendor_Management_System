@@ -23,8 +23,9 @@ def calculate_response_time(sender, instance, **kwargs):
         3. Allow other status to take effect e.g. shipping, completed or cancelled.
            Without updating acknowledgement date.
         4. Estimate delivery date.
-    """
-    initial_delivery_time = 7  # Assumed, change or load from ML model
+     """
+    initial_delivery_time = 7  # Initial assumed value
+
     vendor = instance.vendor
     try:
         old_instance = sender.objects.get(pk=instance.pk)  # Fetch existing status instance on db for comparison
@@ -74,15 +75,19 @@ def calculate_vendor_average_stats(sender, instance, **kwargs):
     vendor_performance = VendorPerformance.objects.filter(vendor=vendor)
     # Calculate averages
 
-    vendor_average_response_time = math.ceil(vendor_performance.aggregate(Avg('response_time'))['response_time__avg'])
+    average_response_time = vendor_performance.aggregate(Avg('response_time'))['response_time__avg']
+    # average_on_time_delivery_rate =
+    # average_quality_rating =
+    # average_fulfillment_rate =
+
 
     # create instance or get if it exists
-    obj_performance, created = VendorPerformanceAverage.objects.get_or_create(
+    vendor_performance, created = VendorPerformanceAverage.objects.get_or_create(
         vendor=vendor,
         defaults={
             'average_on_time_delivery_rate': 0,
             'average_quality_rating': 0,
-            'average_response_time': vendor_average_response_time,
+            'average_response_time': average_response_time,
             'average_fulfillment_rate': 0
         }
     )
@@ -93,5 +98,8 @@ def calculate_vendor_average_stats(sender, instance, **kwargs):
     if not created:
         # Update old instance with new average values
         print(f"created: {created}")
-        obj_performance.average_response_time = vendor_average_response_time
-        obj_performance.save()
+        vendor_performance.average_response_time = average_response_time
+        # vendor_performance.average_on_time_delivery_rate = average_on_time_delivery_rate
+        # vendor_performance.average_quality_rating = average_quality_rating
+        # vendor_performance.average_fulfillment_rate = average_quality_rating
+        vendor_performance.save()

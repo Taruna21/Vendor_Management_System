@@ -2,7 +2,7 @@
 
 from django.urls import path
 from .views import VendorListCreateView, VendorRetrieveUpdateDestroyView, PurchaseOrderListCreateView, \
-    PurchaseOrderRetrieveUpdateDeleteView
+    PurchaseOrderRetrieveUpdateDeleteView, VendorPerformanceListView
 
 urlpatterns = [
     path('vendors/', VendorListCreateView.as_view(), name='vendor-list-create'),
@@ -13,4 +13,6 @@ urlpatterns = [
          name='purchase-order-retrieve-update-delete'),
     # po acknowledgement
     path('purchase_orders/<int:po_id>/acknowledge', PurchaseOrderRetrieveUpdateDeleteView.as_view()),
+    # vendor performance
+    path('vendors/<int:vendor_id>/performance', VendorPerformanceListView.as_view(), name='vendor-performance-list')
 ]

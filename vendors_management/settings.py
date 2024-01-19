@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # run migrations
     'django_extensions',
     'djoser',
-    'drf_spectacular',
     'debug_toolbar',
     # internal apps
     'Vendors',
