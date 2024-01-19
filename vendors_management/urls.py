@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from vendors_management import settings
+
 
 
 urlpatterns = [
@@ -27,6 +29,14 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        # other urlpatterns
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
+
 
 # Important djoser user management endpoints
 # 1. auth/users/

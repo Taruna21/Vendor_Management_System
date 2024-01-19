@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 import datetime
+import math
 
 from .models import PurchaseOrder, VendorPerformance, VendorPerformanceAverage, Vendor
 
@@ -22,8 +23,9 @@ def calculate_response_time(sender, instance, **kwargs):
         3. Allow other status to take effect e.g. shipping, completed or cancelled.
            Without updating acknowledgement date.
         4. Estimate delivery date.
-        """
+     """
     initial_delivery_time = 7  # Initial assumed value
+
     vendor = instance.vendor
     try:
         old_instance = sender.objects.get(pk=instance.pk)  # Fetch existing status instance on db for comparison
@@ -51,7 +53,7 @@ def calculate_response_time(sender, instance, **kwargs):
         # update VendorPerformance
         # Calculate response time
         response_time = instance.acknowledgment_date - instance.issue_date  # compute response. result is a time delta
-        response_time = round((response_time.total_seconds() / (24 * 3600)), 2)  # assume decimal days for response time
+        response_time = math.ceil(response_time.total_seconds() / (24 * 3600))  # response time in days
         vendor_performance = VendorPerformance(vendor=vendor, purchase_order=instance, response_time=response_time)
         vendor_performance.save()
 
@@ -66,15 +68,18 @@ def calculate_vendor_average_stats(sender, instance, **kwargs):
     Anytime the VendorPerformance is updated. Calculate average values and save to VendorPerformanceAverage Model.
     Since we want to calculate the average for each Vendor. There should be only one record/instance of vendor in the
     VendorPerformanceAverage model.
+
     """
     vendor = instance.vendor  # fetch vendor
     # filter all Performance records related to a particular Vendor
     vendor_performance = VendorPerformance.objects.filter(vendor=vendor)
     # Calculate averages
+
     average_response_time = vendor_performance.aggregate(Avg('response_time'))['response_time__avg']
     # average_on_time_delivery_rate =
     # average_quality_rating =
     # average_fulfillment_rate =
+
 
     # create instance or get if it exists
     vendor_performance, created = VendorPerformanceAverage.objects.get_or_create(

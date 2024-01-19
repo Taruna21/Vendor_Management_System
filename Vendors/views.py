@@ -1,21 +1,36 @@
 # Vendors/views.py
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+# import schema decorators
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.openapi import AutoSchema
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Accounts.models import CustomUser
+
 from .models import Vendor, PurchaseOrder, VendorPerformanceAverage
 from .serializers import VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer
 
 
+
 class VendorListCreateView(APIView):
+    @extend_schema(
+        description="Retrieve a list of vendors.",
+        responses={200: VendorSerializer(many=True)},
+    )
     def get(self, request):
         vendors = Vendor.objects.all()
         serializer = VendorSerializer(vendors, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        description="Create a new vendor.",
+        request=VendorSerializer,
+        responses={201: {'Success': 'Vendor created successfully'}, 400: VendorSerializer()},
+    )
     def post(self, request):
         try:
             user_id = int(request.data.get('vendor_user'))  # possible ValueError
@@ -40,6 +55,10 @@ class VendorListCreateView(APIView):
 
 
 class VendorRetrieveUpdateDestroyView(APIView):
+    @extend_schema(
+        description="Retrieve a specific vendor.",
+        responses={200: VendorSerializer()},
+    )
     def get(self, request, vendor_id):
         try:
             vendor = Vendor.objects.get(pk=vendor_id)
@@ -48,6 +67,11 @@ class VendorRetrieveUpdateDestroyView(APIView):
         except Vendor.DoesNotExist:
             return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    @extend_schema(
+        description="Update a specific vendor.",
+        request=VendorSerializer,
+        responses={200: VendorSerializer(), 400: VendorSerializer()},
+    )
     def put(self, request, vendor_id):
         try:
             vendor = Vendor.objects.get(pk=vendor_id)
@@ -59,6 +83,7 @@ class VendorRetrieveUpdateDestroyView(APIView):
         except Vendor.DoesNotExist:
             return Response({'error': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    @extend_schema(description="Delete a specific vendor.", responses={204: None})
     def delete(self, request, vendor_id):
         try:
             vendor = Vendor.objects.get(pk=vendor_id)
@@ -69,6 +94,11 @@ class VendorRetrieveUpdateDestroyView(APIView):
 
 
 class PurchaseOrderListCreateView(APIView):
+    @extend_schema(
+        description="Retrieve a list of purchase orders.",
+        request=PurchaseOrderSerializer,
+        responses={200: PurchaseOrderSerializer(many=True)},
+    )
     def get(self, request):
         vendor_filter = request.query_params.get('vendor', None)
         if vendor_filter:
@@ -79,6 +109,11 @@ class PurchaseOrderListCreateView(APIView):
         serializer = PurchaseOrderSerializer(purchase_orders, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        description="Create a new purchase order.",
+        request=PurchaseOrderSerializer,
+        responses={201: PurchaseOrderSerializer(), 400: PurchaseOrderSerializer()},
+    )
     def post(self, request):
         serializer = PurchaseOrderSerializer(data=request.data)
         if serializer.is_valid():
@@ -88,6 +123,7 @@ class PurchaseOrderListCreateView(APIView):
 
 
 class PurchaseOrderRetrieveUpdateDeleteView(APIView):
+    @extend_schema(description="Retrieve a specific purchase order.", responses={200: PurchaseOrderSerializer()})
     def get(self, request, po_id):
         try:
             purchase_order = PurchaseOrder.objects.get(pk=po_id)
@@ -109,12 +145,19 @@ class PurchaseOrderRetrieveUpdateDeleteView(APIView):
         except PurchaseOrder.DoesNotExist:
             return Response({'error': 'Purchase Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    @extend_schema(
+        description="Update a specific purchase order.",
+        request=PurchaseOrderSerializer,
+        responses={200: PurchaseOrderSerializer(), 400: PurchaseOrderSerializer()},
+    )
     def put(self, request, po_id):
         return self.update_purchase_order(request, po_id)
 
+    @extend_schema(description="Partially update a specific purchase order.", request=PurchaseOrderSerializer)
     def patch(self, request, po_id):
         return self.update_purchase_order(request, po_id, partial=True)
 
+    @extend_schema(description="Delete a specific purchase order.", responses={204: None})
     def delete(self, request, po_id):
         try:
             purchase_order = PurchaseOrder.objects.get(pk=po_id)
