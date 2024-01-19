@@ -75,6 +75,7 @@ def calculate_vendor_average_stats(sender, instance, **kwargs):
     # average_on_time_delivery_rate =
     # average_quality_rating =
     # average_fulfillment_rate =
+
     # create instance or get if it exists
     vendor_performance, created = VendorPerformanceAverage.objects.get_or_create(
         vendor=vendor,
