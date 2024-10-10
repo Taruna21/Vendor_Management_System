@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "vendor-management-system"
+version = "0.1.0"
+description = ""
+authors = ["'kelvinmacharia254' <'pilotkelvin0@gmail.com'>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Django = "^5.1.2"
+django-rest-framework = "^0.1.0"
+djoser = "^2.2.3"
+drf-spectacular = "^0.27.2"
+
+[tool.poetry.group.dev.dependencies]
+django-extensions = "^3.2.3"
+django-debug-toolbar = "^4.4.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
