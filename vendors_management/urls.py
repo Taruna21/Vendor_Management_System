@@ -19,8 +19,6 @@ from django.urls import path, include
 
 from vendors_management import settings
 
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('Vendors.urls')),
@@ -32,11 +30,11 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        # other urlpatterns
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
 
+    urlpatterns = [
+                      # other urlpatterns
+                      path('__debug__/', include(debug_toolbar.urls)),
+                  ] + urlpatterns
 
 # Important djoser user management endpoints
 # 1. auth/users/

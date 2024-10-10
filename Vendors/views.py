@@ -3,7 +3,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 # import schema decorators
 from drf_spectacular.utils import extend_schema
-from drf_spectacular.openapi import AutoSchema
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -13,7 +12,6 @@ from Accounts.models import CustomUser
 
 from .models import Vendor, PurchaseOrder, VendorPerformanceAverage
 from .serializers import VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer
-
 
 
 class VendorListCreateView(APIView):
